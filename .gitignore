@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.svelte-kit/
+*.tsbuildinfo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and cache
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.cache/
+.parcel-cache/
+.turbo/
+.vercel/
+
+# Testing / coverage
+coverage/
+.nyc_output/
+
+# IDE / editor (JetBrains, VS Code workspace junk)
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Python (if any)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# React Native / mobile
+*.jks
+*.keystore
+*.p8
+*.p12
+*.mobileprovision
+*.orig.*
+Pods/
+DerivedData/
+*.hprof
+.cxx/
+*.apk
+*.aab
+.gradle/
+local.properties
+
+# Misc
+*.local

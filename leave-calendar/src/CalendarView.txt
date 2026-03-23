@@ -1,0 +1,124 @@
+import React, { useState } from 'react';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
+import enUS from 'date-fns/locale/en-US';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Dialog } from '@headlessui/react';
+
+const localizer = dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek,
+    getDay,
+    locales: { 'en-US': enUS },
+});
+
+export default function CalendarView({ events, onAddLeave }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [formData, setFormData] = useState({
+        title: '',
+        type: 'Planned',
+    });
+
+    const handleSlotSelect = (slotInfo) => {
+        setSelectedDate(slotInfo.start);
+        setIsOpen(true);
+    };
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onAddLeave({
+            id: Date.now(),
+            title: formData.title,
+            type: formData.type,
+            start: selectedDate,
+            end: selectedDate,
+        });
+        setFormData({ title: '', type: 'Planned' });
+        setIsOpen(false);
+    };
+
+    const eventStyleGetter = (event) => {
+        const colors = {
+            Planned: '#34d399',
+            Sick: '#f87171',
+            WFH: '#60a5fa',
+            Other: '#fbbf24',
+        };
+        return {
+            style: {
+                backgroundColor: colors[event.type] || '#9ca3af',
+                color: 'white',
+                borderRadius: '4px',
+            },
+        };
+    };
+
+    return (
+        <>
+            <Calendar
+                localizer={localizer}
+                events={events}
+                selectable
+                startAccessor="start"
+                endAccessor="end"
+                onSelectSlot={handleSlotSelect}
+                style={{ height: 500 }}
+                eventPropGetter={eventStyleGetter}
+            />
+
+            <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+                <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <Dialog.Panel className="bg-white w-full max-w-md rounded p-6 shadow-xl space-y-4">
+                        <Dialog.Title className="text-lg font-bold">Add Leave</Dialog.Title>
+                        <p className="text-sm text-gray-500">
+                            Selected date: {selectedDate?.toDateString()}
+                        </p>
+                        <form onSubmit={handleSubmit} className="space-y-3">
+                            <input
+                                name="title"
+                                placeholder="User Name"
+                                className="w-full border p-2 rounded"
+                                value={formData.title}
+                                onChange={handleChange}
+                                required
+                            />
+                            <select
+                                name="type"
+                                value={formData.type}
+                                onChange={handleChange}
+                                className="w-full border p-2 rounded"
+                            >
+                                <option value="Planned">Planned</option>
+                                <option value="Sick">Sick</option>
+                                <option value="WFH">WFH</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    type="button"
+                                    className="px-3 py-1 bg-gray-300 rounded"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-3 py-1 bg-blue-600 text-white rounded"
+                                >
+                                    Add
+                                </button>
+                            </div>
+                        </form>
+                    </Dialog.Panel>
+                </div>
+            </Dialog>
+        </>
+    );
+}
